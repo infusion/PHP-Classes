@@ -22,7 +22,6 @@ class xPassport {
 	return $x % 10;
     }
 
-
     private function strip($str) {
 	preg_match('|([0-9]{9})([0-9]{1})d<<([0-9]{6})([0-9]{1})<([0-9]{6})([0-9]{1})<{7}([0-9]{1})|i', $str, $ret);
 	if (count($ret) == 8) {
@@ -31,7 +30,6 @@ class xPassport {
 	    return false;
 	}
     }
-
 
     /**
      * Validates a passport number
@@ -62,7 +60,6 @@ class xPassport {
 	return true;
     }
 
-
     /**
      * Get's the age of the person with this passport number
      *
@@ -91,7 +88,6 @@ class xPassport {
 	}
     }
 
-
     /**
      * Checks if the person with this passport number reached a given age - let's say 18
      *
@@ -105,7 +101,6 @@ class xPassport {
 	    return false;
 	}
     }
-
 
     /**
      * Gets the issuing date of the passport
@@ -130,6 +125,4 @@ class xPassport {
 	    return 0;
 	}
     }
-
-
 }

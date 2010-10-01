@@ -40,8 +40,6 @@ class xColor {
 	    return false;
 	}
     }
-
-
     ###
 
     protected function _input($col) {
@@ -62,7 +60,6 @@ class xColor {
 	return false;
     }
 
-
     protected function _output($rgb) {
 
 	switch ($this->out) {
@@ -81,11 +78,9 @@ class xColor {
 	return false;
     }
 
-
     protected function _int2rgb($col) {
 	return array(($col >> 16) & 0xff, ($col >> 8) & 0xff, $col & 0xff);
     }
-
 
     protected function _hex2rgb($hex) {
 	$hex = str_replace('#', '', $hex);
@@ -105,7 +100,6 @@ class xColor {
 	}
 	return false;
     }
-
 
     protected function _hsl2rgb($hls) {
 
@@ -131,7 +125,6 @@ class xColor {
 	}
 	return $rgb;
     }
-
 
     protected function _hsv2rgb($hsv) {
 
@@ -196,16 +189,13 @@ class xColor {
 	return $rgb;
     }
 
-
     protected function _rgb2int($rgb) {
 	return (($rgb[0] << 16) + ($rgb[1] << 8) + $rgb[2]) & 0xffffff;
     }
 
-
     protected function _rgb2hex($rgb) {
 	return sprintf('%02X%02X%02X', $rgb[0], $rgb[1], $rgb[2]);
     }
-
 
     protected function _rgb2hsl($rgb) {
 
@@ -240,7 +230,6 @@ class xColor {
 	return $hsl;
     }
 
-
     protected function _rgb2hsv($rgb) {
 
 	$hsv = array();
@@ -268,7 +257,6 @@ class xColor {
 	return $hsv;
     }
 
-
     protected function _hval($n1, $n2, $h) {
 
 	if ($h > 360) {
@@ -287,8 +275,6 @@ class xColor {
 	    return $n1;
 	}
     }
-
-
     ###
 
     /**
@@ -310,7 +296,6 @@ class xColor {
 	return $this->_output($r);
     }
 
-
     /**
      * Gets the green portion of a color
      *
@@ -329,7 +314,6 @@ class xColor {
 
 	return $this->_output($r);
     }
-
 
     /**
      * Gets the blue portion of a color
@@ -350,7 +334,6 @@ class xColor {
 	return $this->_output($r);
     }
 
-
     /**
      * Gets a random color
      *
@@ -366,7 +349,6 @@ class xColor {
 
 	return $this->_output($r);
     }
-
 
     /**
      * Gets a merged color with the respect of an alpha value
@@ -394,7 +376,6 @@ class xColor {
 	return $this->_output($r);
     }
 
-
     /**
      * Inverts a color
      *
@@ -411,7 +392,6 @@ class xColor {
 
 	return $this->_output($r);
     }
-
 
     /**
      * Get's a XOR'ed combination of both colors
@@ -431,7 +411,6 @@ class xColor {
 
 	return $this->_output($r);
     }
-
 
     /**
      * Get's the additive color mixing of 2 colors
@@ -454,7 +433,6 @@ class xColor {
 	return $this->_output($r);
     }
 
-
     /**
      * Get's the subtractive color mixing of 2 colors
      *
@@ -475,7 +453,6 @@ class xColor {
 
 	return $this->_output($r);
     }
-
 
     /**
      * Get's the difference color of 2 colors
@@ -498,7 +475,6 @@ class xColor {
 	return $this->_output($r);
     }
 
-
     /**
      * Get's the multiply color of 2 colors
      *
@@ -519,7 +495,6 @@ class xColor {
 
 	return $this->_output($r);
     }
-
 
     /**
      * Get's a average color of both colors
@@ -542,7 +517,6 @@ class xColor {
 	return $this->_output($r);
     }
 
-
     /**
      * Get's a lighten color
      *
@@ -562,7 +536,6 @@ class xColor {
 
 	return $this->_output($r);
     }
-
 
     /**
      * Get's a color with parts of both colors
@@ -586,7 +559,6 @@ class xColor {
 	return $this->_output($this->_int2rgb(($this->_rgb2int($a) & $mask) | ($this->_rgb2int($b) & ($mask ^ 0xffffff))));
     }
 
-
     /**
      * Get's the grey scale replacement of a color
      *
@@ -602,7 +574,6 @@ class xColor {
 	// Percentage: (255 - $y) * 100 / 255
 	return $this->_output(array($y, $y, $y));
     }
-
 
     /**
      * Get's a web safe color
@@ -623,7 +594,6 @@ class xColor {
 	return $this->_output($r);
     }
 
-
     /**
      * Get's a readable text color dependent on the background
      *
@@ -640,7 +610,6 @@ class xColor {
 	    return $this->_output($this->_input($light));
 	}
     }
-
 
     /**
      * Check if a color is readable on a certain background
@@ -662,7 +631,6 @@ class xColor {
 	return sqrt($p) > $thld;
     }
 
-
     /**
      * Get's the distance between two colors
      *
@@ -677,7 +645,6 @@ class xColor {
 
 	return sqrt(3 * ($b[0] - $a[0]) * ($b[0] - $a[0]) + 4 * ($b[1] - $a[1]) * ($b[1] - $a[1]) + 2 * ($b[2] - $a[2]) * ($b[2] - $a[2]));
     }
-
 
     /**
      * Get's the colors between two colors
@@ -712,7 +679,6 @@ class xColor {
 	return $ret;
     }
 
-
     /**
      * Gets the level in a fixed size gradient
      *
@@ -738,6 +704,4 @@ class xColor {
 
 	return $this->_output($r);
     }
-
-
 }

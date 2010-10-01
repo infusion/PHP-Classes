@@ -52,7 +52,6 @@ class xFraction {
 	return $a;
     }
 
-
     private function _input($val) {
 
 	switch (gettype($val)) {
@@ -123,7 +122,6 @@ class xFraction {
 	return NULL;
     }
 
-
     /**
      * Divide the fraction by the Greatest common divisor to get the smallest possible fraction
      *
@@ -139,7 +137,6 @@ class xFraction {
 	    return NULL;
 	}
     }
-
 
     /**
      * Adds two fractions
@@ -157,7 +154,6 @@ class xFraction {
 	}
     }
 
-
     /**
      * Subtract one fraction from another
      *
@@ -173,7 +169,6 @@ class xFraction {
 	    return NULL;
 	}
     }
-
 
     /**
      * Multiply two fractions
@@ -191,7 +186,6 @@ class xFraction {
 	}
     }
 
-
     /**
      * Divide two fractions
      *
@@ -207,7 +201,6 @@ class xFraction {
 	    return NULL;
 	}
     }
-
 
     /**
      * Check if two fractions are equal
@@ -230,7 +223,6 @@ class xFraction {
 	}
     }
 
-
     /**
      * Get's the canceled reciprocal of a fraction
      *
@@ -246,6 +238,4 @@ class xFraction {
 	    return NULL;
 	}
     }
-
-
 }
