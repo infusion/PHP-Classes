@@ -3,705 +3,1128 @@
 /**
  * A handy class to calculate color values.
  *
- * @version 1.0
+ * @version 2.0
  * @author Robert Eisele <robert@xarg.org>
- * @copyright Copyright (c) 2009, Robert Eisele
- * @link http://www.xarg.org/2009/12/handy-php-classes/
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- *
- * @uses PHP Infusion Extention of Robert Eisele
- * @link http://www.xarg.org/projects/php-infusion/
+ * @copyright Copyright (c) 2010, Robert Eisele
+ * @license Dual licensed under the MIT or GPL Version 2 licenses.
  */
-define('T_COLOR_INT', 0);
-define('T_COLOR_HEX', 1);
-define('T_COLOR_RGB', 2);
-define('T_COLOR_HSL', 3);
-define('T_COLOR_HSV', 4);
+
 
 class xColor {
 
-    private $in = T_COLOR_HEX;
-    private $out = T_COLOR_HEX;
+    public $r, $g, $b, $a, $success;
+    // http://www.w3.org/TR/css3-color/#svg-color
+    private $color_names = array(
+	'transparent' => 16777216,
+	'aliceblue' => 15792383,
+	'antiquewhite' => 16444375,
+	'aqua' => 65535,
+	'aquamarine' => 8388564,
+	'azure' => 15794175,
+	'beige' => 16119260,
+	'bisque' => 16770244,
+	'black' => 0,
+	'blanchedalmond' => 16772045,
+	'blue' => 255,
+	'blueviolet' => 9055202,
+	'brown' => 10824234,
+	'burlywood' => 14596231,
+	'cadetblue' => 6266528,
+	'chartreuse' => 8388352,
+	'chocolate' => 13789470,
+	'coral' => 16744272,
+	'cornflowerblue' => 6591981,
+	'cornsilk' => 16775388,
+	'crimson' => 14423100,
+	'cyan' => 65535,
+	'darkblue' => 139,
+	'darkcyan' => 35723,
+	'darkgoldenrod' => 12092939,
+	'darkgray' => 11119017,
+	'darkgreen' => 25600,
+	'darkgrey' => 11119017,
+	'darkkhaki' => 12433259,
+	'darkmagenta' => 9109643,
+	'darkolivegreen' => 5597999,
+	'darkorange' => 16747520,
+	'darkorchid' => 10040012,
+	'darkred' => 9109504,
+	'darksalmon' => 15308410,
+	'darkseagreen' => 9419919,
+	'darkslateblue' => 4734347,
+	'darkslategray' => 3100495,
+	'darkslategrey' => 3100495,
+	'darkturquoise' => 52945,
+	'darkviolet' => 9699539,
+	'deeppink' => 16716947,
+	'deepskyblue' => 49151,
+	'dimgray' => 6908265,
+	'dimgrey' => 6908265,
+	'dodgerblue' => 2003199,
+	'firebrick' => 11674146,
+	'floralwhite' => 16775920,
+	'forestgreen' => 2263842,
+	'fuchsia' => 16711935,
+	'gainsboro' => 14474460,
+	'ghostwhite' => 16316671,
+	'gold' => 16766720,
+	'goldenrod' => 14329120,
+	'gray' => 8421504,
+	'green' => 32768,
+	'greenyellow' => 11403055,
+	'grey' => 8421504,
+	'honeydew' => 15794160,
+	'hotpink' => 16738740,
+	'indianred' => 13458524,
+	'indigo' => 4915330,
+	'ivory' => 16777200,
+	'khaki' => 15787660,
+	'lavender' => 15132410,
+	'lavenderblush' => 16773365,
+	'lawngreen' => 8190976,
+	'lemonchiffon' => 16775885,
+	'lightblue' => 11393254,
+	'lightcoral' => 15761536,
+	'lightcyan' => 14745599,
+	'lightgoldenrodyellow' => 16448210,
+	'lightgray' => 13882323,
+	'lightgreen' => 9498256,
+	'lightgrey' => 13882323,
+	'lightpink' => 16758465,
+	'lightsalmon' => 16752762,
+	'lightseagreen' => 2142890,
+	'lightskyblue' => 8900346,
+	'lightslategray' => 7833753,
+	'lightslategrey' => 7833753,
+	'lightsteelblue' => 11584734,
+	'lightyellow' => 16777184,
+	'lime' => 65280,
+	'limegreen' => 3329330,
+	'linen' => 16445670,
+	'magenta' => 16711935,
+	'maroon' => 8388608,
+	'mediumaquamarine' => 6737322,
+	'mediumblue' => 205,
+	'mediumorchid' => 12211667,
+	'mediumpurple' => 9662683,
+	'mediumseagreen' => 3978097,
+	'mediumslateblue' => 8087790,
+	'mediumspringgreen' => 64154,
+	'mediumturquoise' => 4772300,
+	'mediumvioletred' => 13047173,
+	'midnightblue' => 1644912,
+	'mintcream' => 16121850,
+	'mistyrose' => 16770273,
+	'moccasin' => 16770229,
+	'navajowhite' => 16768685,
+	'navy' => 128,
+	'oldlace' => 16643558,
+	'olive' => 8421376,
+	'olivedrab' => 7048739,
+	'orange' => 16753920,
+	'orangered' => 16729344,
+	'orchid' => 14315734,
+	'palegoldenrod' => 15657130,
+	'palegreen' => 10025880,
+	'paleturquoise' => 11529966,
+	'palevioletred' => 14381203,
+	'papayawhip' => 16773077,
+	'peachpuff' => 16767673,
+	'peru' => 13468991,
+	'pink' => 16761035,
+	'plum' => 14524637,
+	'powderblue' => 11591910,
+	'purple' => 8388736,
+	'red' => 16711680,
+	'rosybrown' => 12357519,
+	'royalblue' => 4286945,
+	'saddlebrown' => 9127187,
+	'salmon' => 16416882,
+	'sandybrown' => 16032864,
+	'seagreen' => 3050327,
+	'seashell' => 16774638,
+	'sienna' => 10506797,
+	'silver' => 12632256,
+	'skyblue' => 8900331,
+	'slateblue' => 6970061,
+	'slategray' => 7372944,
+	'slategrey' => 7372944,
+	'snow' => 16775930,
+	'springgreen' => 65407,
+	'steelblue' => 4620980,
+	'tan' => 13808780,
+	'teal' => 32896,
+	'thistle' => 14204888,
+	'tomato' => 16737095,
+	'turquoise' => 4251856,
+	'violet' => 15631086,
+	'wheat' => 16113331,
+	'white' => 16777215,
+	'whitesmoke' => 16119285,
+	'yellow' => 16776960,
+	'yellowgreen' => 10145074
+    );
 
-    /**
-     * Describes the input and output handling
-     *
-     * @param enum $from - one of INT, HEX, RGB, HSL, HSV
-     * @param enum $to - one of INT, HEX, RGB, HSL, HSV
-     * @return - whether the input range is correct
-     */
-    public function setType($from, $to) {
+    public function isSuccess() {
+	return (bool)$this->success;
+    }
 
-	if (0 <= $from && $from <= 4 && 0 <= $to && $to <= 4) {
-	    $this->in = (int)$from;
-	    $this->out = (int)$to;
-	    return true;
+    private function _normalize(&$n, $s=null) {
+
+	if (null === $s) {
+	    $n = (int)$n;
+	    $s = 255;
+	    $m = 255;
 	} else {
-	    return false;
-	}
-    }
-    ###
 
-    protected function _input($col) {
+	    if (1 === $s) {
 
-	switch ($this->in) {
-	    case 0:
-		return $this->_int2rgb($col);
-	    case 1:
-		return $this->_hex2rgb($col);
-	    case 2:
-		return $col;
-	    case 3:
-		return $this->_hsl2rgb($col);
-	    case 4:
-		return $this->_hsv2rgb($col);
+		if (!isset($n)) {
+		    return 1;
+		}
+
+		$s = 100;
+		$m = 1;
+	    } else {
+		$m = $s;
+	    }
+
+	    $n = (float)$n;
 	}
 
-	return false;
-    }
-
-    protected function _output($rgb) {
-
-	switch ($this->out) {
-	    case 0:
-		return $this->_rgb2int($rgb);
-	    case 1:
-		return $this->_rgb2hex($rgb);
-	    case 2:
-		return $rgb;
-	    case 3:
-		return $this->_rgb2hsl($rgb);
-	    case 4:
-		return $this->_rgb2hsv($rgb);
+	if (is_nan($n) || $n <= 0) {
+	    return 0;
 	}
 
-	return false;
+	if ($s < $n) {
+	    return $m;
+	}
+
+	if ($n <= 1) {
+	    if ($m === 1) {
+		return $n;
+	    } else {
+		return ($n * $m) | 0;
+	    }
+	}
+	return $n * $m / $s;
     }
 
-    protected function _int2rgb($col) {
-	return array(($col >> 16) & 0xff, ($col >> 8) & 0xff, $col & 0xff);
+    private function _hue($v1, $v2, $h) {
+	if ($h < 0)
+	    $h++;
+	if ($h > 1)
+	    $h--;
+	if (6 * $h < 1)
+	    return $v1 + ($v2 - $v1) * 6 * $h;
+	if (2 * $h < 1)
+	    return $v2;
+	if (3 * $h < 2)
+	    return $v1 + ($v2 - $v1) * (4 - 6 * $h);
+	return $v1;
     }
 
-    protected function _hex2rgb($hex) {
-	$hex = str_replace('#', '', $hex);
+    function _hsl($h, $s, $l) {
 
-	switch (strlen($hex)) {
-	    case 3:
-		$a = str_split($hex);
-		$a[0].= $a[0];
-		$a[1].= $a[1];
-		$a[2].= $a[2];
-		return array(hexdec($a[0]), hexdec($a[1]), hexdec($a[2]));
-		break;
+	$h = $this->_normalize($h, 360) / 360;
+	$s = $this->_normalize($s, 1);
+	$l = $this->_normalize($l, 1);
+
+	if (0 == $s) {
+	    $l = round($l * 255);
+	    return array($l, $l, $l);
+	}
+
+	$v = $l < 0.5 ? ($l * (1 + $s)) : ($l + $s - $l * $s);
+	$m = $l + $l - $v;
+
+	return array(
+	    round(255 * $this->_hue($m, $v, $h + 1 / 3)),
+	    round(255 * $this->_hue($m, $v, $h)),
+	    round(255 * $this->_hue($m, $v, $h - 1 / 3)));
+    }
+
+    private function _hsv($h, $s, $v) {
+
+	$h = $this->_normalize($h, 360) / 60;
+	$s = $this->_normalize($s, 1);
+	$v = $this->_normalize($v, 1);
+
+	$hi = $h | 0;
+	$f = $h - $hi;
+
+	if (!($hi & 1))
+	    $f = 1 - $f;
+
+	$m = round(255 * ($v * (1 - $s)));
+	$n = round(255 * ($v * (1 - $s * $f)));
+
+	$v = round(255 * $v);
+
+	switch ($hi) {
 	    case 6:
-		$a = str_split($hex, 2);
-		return array(hexdec($a[0]), hexdec($a[1]), hexdec($a[2]));
+	    case 0:
+		return array($v, $n, $m);
+	    case 1:
+		return array($n, $v, $m);
+	    case 2:
+		return array($m, $v, $n);
+	    case 3:
+		return array($m, $n, $v);
+	    case 4:
+		return array($n, $m, $v);
+	    case 5:
+		return array($v, $m, $n);
+	}
+    }
+
+    public function setColor($color) {
+
+	$this->success = true;
+
+	switch (gettype($color)) {
+
+	    case 'integer':
+		$this->a = (($color >> 24) & 0xff) / 255;
+		$this->r = ($color >> 16) & 0xff;
+		$this->g = ($color >> 8) & 0xff;
+		$this->b = ($color ) & 0xff;
+		return;
+
+	    case 'object':
+		$color = (array)$color;
+	    case 'array':
+		if (isset($color[2], $color[1], $color[0])) {
+
+		    $this->a = $this->_normalize($color[3], 1);
+		    $this->r = $this->_normalize($color[0]);
+		    $this->g = $this->_normalize($color[1]);
+		    $this->b = $this->_normalize($color[2]);
+		    return;
+		} else if (isset($color['r'], $color['g'], $color['b'])) {
+		    $this->a = $this->_normalize($color['a'], 1);
+		    $this->r = $this->_normalize($color['r']);
+		    $this->g = $this->_normalize($color['g']);
+		    $this->b = $this->_normalize($color['b']);
+		    return;
+		} else if (isset($color['h'], $color['s'])) {
+		    switch (true) {
+			case isset($color['l']):
+			    $rgb = $this->_hsl($color['h'], $color['s'], $color['l']);
+			    break;
+			case isset($color['v']):
+			    $rgb = $this->_hsv($color['h'], $color['s'], $color['v']);
+			    break;
+			case isset($color['b']):
+			    $rgb = $this->_hsv($color['h'], $color['s'], $color['b']);
+			    break;
+		    }
+		    $this->a = $this->_normalize($color['a'], 1);
+		    $this->r = $rgb[0];
+		    $this->g = $rgb[1];
+		    $this->b = $rgb[2];
+		    return;
+		}
 		break;
+	    case 'string':
+		break;
+	    default:
+		$this->success = false;
+		return;
 	}
-	return false;
-    }
 
-    protected function _hsl2rgb($hls) {
+	$color = strtolower(preg_replace('/[^a-z0-9,.()#%]/', '', $color));
 
-	$rgb = array(0, 0, 0);
+	if (isset($this->color_names[$color])) {
 
-	$m2 = ($hls[1] <= .5) ? ($hls[1] * (1 + $hls[2])) : ($hls[1] + $hls[2] * (1 - $hls[1]));
-	$m1 = 2 * $hls[1] - $m2;
+	    $c = $this->color_names[$color];
 
-	if (!$hls[2]) {
-	    if ($hls[0] === null) {
-		$rgb[0] = $rgb[1] = $rgb[2] = $hls[1];
+	    $this->a = (!(($c >> 24) & 0xff)) | 0;
+	    $this->r = (($c >> 16) & 0xff);
+	    $this->g = (($c >> 8) & 0xff);
+	    $this->b = (($c ) & 0xff);
+	    return;
+	}
+
+	// 53892983
+	if (preg_match('/^([1-9]\d*)$/', $color, $part)) {
+
+	    $c = (int)$part[1];
+
+	    $this->a = (($c >> 24) & 0xff) / 255;
+	    $this->r = (($c >> 16) & 0xff);
+	    $this->g = (($c >> 8) & 0xff);
+	    $this->b = (($c ) & 0xff);
+
+	    if (empty($this->a)) {
+		$this->a = 1;
+	    }
+	    return;
+	}
+
+	// #ff9000, #ff0000
+	if (preg_match('/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/', $color, $part)) {
+	    $this->a = 1;
+	    $this->r = hexdec($part[1]);
+	    $this->g = hexdec($part[2]);
+	    $this->b = hexdec($part[3]);
+	    return;
+	}
+
+	// #f00, fff
+	if (preg_match('/^#?([0-9a-f])([0-9a-f])([0-9a-f])$/', $color, $part)) {
+	    $this->a = 1;
+	    $this->r = hexdec($part[1] . $part[1]);
+	    $this->g = hexdec($part[2] . $part[2]);
+	    $this->b = hexdec($part[3] . $part[3]);
+	    return;
+	}
+
+	// rgb(1, 234, 56)
+	if (preg_match('/^rgba?\((\d{1,3}),(\d{1,3}),(\d{1,3})(,([0-9.]+))?\)$/', $color, $part)) {
+	    $this->a = $this->_normalize($part[5], 1);
+	    $this->r = $this->_normalize($part[1]);
+	    $this->g = $this->_normalize($part[2]);
+	    $this->b = $this->_normalize($part[3]);
+	    return;
+	}
+
+	// rgb(66%, 55%, 44%) in [0,100]%, [0,100]%, [0,100]%
+	if (preg_match('/^rgba?\(([0-9.]+\%),([0-9.]+\%),([0-9.]+\%)(,([0-9.]+)\%?)?\)$/', $color, $part)) {
+	    $this->a = $this->_normalize($part[5], 1);
+	    $this->r = round($this->_normalize($part[1], 100) * 2.55);
+	    $this->g = round($this->_normalize($part[2], 100) * 2.55);
+	    $this->b = round($this->_normalize($part[3], 100) * 2.55);
+	    return;
+	}
+
+	// hsv(64, 40, 16) in [0, 360], [0,100], [0,100]
+	if (preg_match('/^hs([bvl])a?\((\d{1,3}),(\d{1,3}),(\d{1,3})(,([0-9.]+))?\)$/', $color, $part)) {
+
+	    if ($part[1] == "l") {
+		$c = $this->_hsl((int)$part[2], (int)$part[3], (int)$part[4]);
 	    } else {
-		return false;
+		$c = $this->_hsv((int)$part[2], (int)$part[3], (int)$part[4]);
 	    }
-	} else {
-	    $rgb[0] = $this->_hval($m1, $m2, $hls[0] + 120);
-	    $rgb[1] = $this->_hval($m1, $m2, $hls[0]);
-	    $rgb[2] = $this->_hval($m1, $m2, $hls[0] - 120);
+
+	    $this->a = $this->_normalize($part[6], 1);
+	    $this->r = $c[0];
+	    $this->g = $c[1];
+	    $this->b = $c[2];
+	    return;
 	}
 
-	for ($c = 0; $c < 3; ++$c) {
-	    $rgb[$c] = round($rgb[$c] * 255);
-	}
-	return $rgb;
-    }
-
-    protected function _hsv2rgb($hsv) {
-
-	$rgb = array();
-
-	if (!$hsv[1]) {
-	    if (0 === $hsv[0]) {
-		$rgb[0] = $rgb[1] = $rgb[2] = $hsv[2];
-	    } else {
-		return false;
-	    }
-	} else {
-	    if (360 === $hsv[0]) {
-		$hsv[0] = 0;
-	    }
-
-	    $hsv[0]/= 60;
-	    $i = floor($hsv[0]);
-	    $f = $hsv[0] - $i;
-	    $p = $hsv[2] * (1 - $hsv[1]);
-	    $q = $hsv[2] * (1 - ($hsv[1] * $f));
-	    $t = $hsv[2] * (1 - ($hsv[1] * (1 - $f)));
-
-	    switch ($i) {
-		case 0:
-		    $rgb[0] = $hsv[2];
-		    $rgb[1] = $t;
-		    $rgb[2] = $p;
-		    break;
-		case 1:
-		    $rgb[0] = $q;
-		    $rgb[1] = $hsv[2];
-		    $rgb[2] = $p;
-		    break;
-		case 2:
-		    $rgb[0] = $p;
-		    $rgb[1] = $hsv[2];
-		    $rgb[2] = $t;
-		    break;
-		case 3:
-		    $rgb[0] = $p;
-		    $rgb[1] = $q;
-		    $rgb[2] = $hsv[2];
-		    break;
-		case 4:
-		    $rgb[0] = $t;
-		    $rgb[1] = $p;
-		    $rgb[2] = $hsv[2];
-		    break;
-		case 5:
-		    $rgb[0] = $hsv[2];
-		    $rgb[1] = $p;
-		    $rgb[2] = $q;
-		    break;
-	    }
+	// 1, 234, 56
+	if (preg_match('/^(\d{1,3}),(\d{1,3}),(\d{1,3})(,([0-9.]+))?$/', $color, $part)) {
+	    $this->a = $this->_normalize($part[5], 1);
+	    $this->r = $this->_normalize($part[1]);
+	    $this->g = $this->_normalize($part[2]);
+	    $this->b = $this->_normalize($part[3]);
+	    return;
 	}
 
-	$rgb[0] = round($rgb[0] * 255);
-	$rgb[1] = round($rgb[1] * 255);
-	$rgb[2] = round($rgb[2] * 255);
-
-	return $rgb;
+	$this->success = false;
     }
 
-    protected function _rgb2int($rgb) {
-	return (($rgb[0] << 16) + ($rgb[1] << 8) + $rgb[2]) & 0xffffff;
+    public function getColor($type=null) {
+
+	if (null !== $type)
+	    switch (strtolower($type)) {
+		case "rgb":
+		    return $this->getRGB();
+		case "hsv":
+		case "hsb":
+		    return $this->getHSV();
+		case "hsl":
+		    return $this->getHSL();
+		case "int":
+		    return $this->getInt();
+		case "array":
+		    return $this->getArray();
+		case "fraction":
+		    return $this->getFraction();
+		case "css":
+		case "style":
+		    return $this->getCSS();
+		case "name":
+		    return $this->getName();
+	    }
+	return $this->getHex();
     }
 
-    protected function _rgb2hex($rgb) {
-	return sprintf('%02X%02X%02X', $rgb[0], $rgb[1], $rgb[2]);
+    public function getRGB() {
+
+	if ($this->success) {
+
+	    return array(
+		'r' => $this->r,
+		'g' => $this->g,
+		'b' => $this->b,
+		'a' => $this->a
+	    );
+	}
+	return null;
     }
 
-    protected function _rgb2hsl($rgb) {
+    public function getCSS() {
 
-	$hsl = array();
-	$min = max($rgb);
-	$min = min($rgb);
+	if ($this->success) {
 
-	$hsl[2] = ($max + $min) / 2;
+	    if ($this->a == 1) {
+		return 'rgb(' . $this->r . ', ' . $this->g . ', ' . $this->b . ')';
+	    }
+	    return 'rgba(' . $this->r . ', ' . $this->g . ', ' . $this->b . ', ' . $this->a . ')';
+	}
+	return null;
+    }
 
-	if ($max === $min) { // R = G = B
-	    $hsl[0] = 0;
-	    $hsl[1] = 0;
-	} else {
+    public function getArray() {
+
+	if ($this->success) {
+	    return array($this->r, $this->g, $this->b, $this->a * 100 | 0);
+	}
+	return null;
+    }
+
+    public function getName() {
+
+	if ($this->success) {
+
+	    $lowest = null;
+
+	    $a = $this->getHSL();
+
+	    foreach ($this->color_names as $k => $t) {
+
+		/* We do not handle transparency */
+		$x = new xColor($t);
+		$b = $x->getHSL();
+
+		$tmp = sqrt(0.5 * ($a['h'] - $b['h']) * ($a['h'] - $b['h']) + 0.5 * ($a['s'] - $b['s']) * ($a['s'] - $b['s']) + ($a['l'] - $b['l']) * ($a['l'] - $b['l']));
+
+		if (null === $lowest || $tmp < $lowest) {
+		    $lowest = $tmp;
+		    $lowest_ndx = $k;
+		}
+	    }
+	    return $lowest_ndx;
+	}
+	return null;
+    }
+
+    public function getFraction() {
+
+	if ($this->success) {
+
+	    return array(
+		'r' => $this->r / 255,
+		'g' => $this->g / 255,
+		'b' => $this->b / 255,
+		'a' => $this->a
+	    );
+	}
+	return null;
+    }
+
+    public function getHSL() {
+
+	// inspiration: http://130.113.54.154/~monger/hsl-rgb.html
+	if ($this->success) {
+
+	    $r = $this->r / 255;
+	    $g = $this->g / 255;
+	    $b = $this->b / 255;
+
+	    $min = min($r, $g, $b);
+	    $max = max($r, $g, $b);
 	    $delta = $max - $min;
 
-	    if ($hsl[2] <= .5) {
-		$hsl[1] = $delta / ($max + $min);
-	    } else {
-		$hsl[1] = $delta / (2 - ($max + $min));
-	    }
+	    $l = ($max + $min) / 2;
 
-	    if ($max === $rgb[0] && $rgb[1] >= $rgb[2]) {
-		$hsl[0] = 60 * ($rgb[1] - $rgb[2]) / $delta;
-	    } else if ($max === $rgb[0] && $rgb[1] < $rgb[2]) {
-		$hsl[0] = 60 * ($rgb[1] - $rgb[2]) / $delta + 360;
-	    } else if ($max === $rgb[1]) {
-		$hsl[0] = 60 * ($rgb[2] - $rgb[0]) / $delta + 120;
-	    } else if ($max === $b) {
-		$hsl[0] = 60 * ($rgb[0] - $rgb[1]) / $delta + 240;
+	    if (0 == $delta) {
+		$h = 0;
+		$s = 0;
+	    } else {
+
+		if ($l < .5) {
+		    $s = $delta / ($max + $min);
+		} else {
+		    $s = $delta / (2.0 - ($max + $min));
+		}
+
+		if ($max == $r) {
+		    $h = ($g - $b) / $delta;
+		} else if ($max == $g) {
+		    $h = 2.0 + ($b - $r) / $delta;
+		} else if ($max == $b) {
+		    $h = 4.0 + ($r - $g) / $delta;
+		}
+
+		if ($h < 0) {
+		    $h+= 6;
+		}
 	    }
+	    return array(
+		'h' => round($h * 60),
+		's' => round($s * 100),
+		'l' => round($l * 100),
+		'a' => $this->a
+	    );
 	}
-	return $hsl;
+	return null;
     }
 
-    protected function _rgb2hsv($rgb) {
+    public function getHSV() {
 
-	$hsv = array();
-	$max = max($rgb);
-	$min = min($rgb);
+	if ($this->success) {
 
-	$hsv[1] = $max ? 1 - $max / $min : 0;
-	$hsv[2] = $max;
+	    $r = $this->r / 255;
+	    $g = $this->g / 255;
+	    $b = $this->b / 255;
 
-	if (!$hsv[1]) {
-	    $hsv[0] = 0;
-	} else {
+	    $min = min($r, $g, $b);
+	    $max = max($r, $g, $b);
 	    $delta = $max - $min;
 
-	    if ($max === $rgb[0] && $rgb[1] >= $rgb[2]) {
-		$hsv[0] = 60 * ($rgb[1] - $rgb[2]) / $delta;
-	    } else if ($max === $rgb[0] && $rgb[1] < $rgb[2]) {
-		$hsv[0] = 60 * ($rgb[1] - $rgb[2]) / $delta + 360;
-	    } else if ($max === $rgb[1]) {
-		$hsv[0] = 60 * ($rgb[2] - $rgb[0]) / $delta + 120;
-	    } else if ($max === $b) {
-		$hsv[0] = 60 * ($rgb[0] - $rgb[1]) / $delta + 240;
+	    $v = $max;
+
+	    if (0 == $delta) {
+		$h = 0;
+		$s = 0;
+	    } else {
+		$s = $delta / $max;
+
+		$delta*= 6;
+
+		$dR = 0.5 + ($max - $r) / $delta;
+		$dG = 0.5 + ($max - $g) / $delta;
+		$dB = 0.5 + ($max - $b) / $delta;
+
+		if ($r == $max) {
+		    $h = $dB - $dG;
+		} else if ($g == $max) {
+		    $h = 1 / 3 + $dR - $dB;
+		} else if ($b == $max) {
+		    $h = 2 / 3 + $dG - $dR;
+		}
+
+		if ($h < 0)
+		    $h++;
+		if ($h > 1)
+		    $h--;
 	    }
+
+	    return array(
+		'h' => round($h * 360),
+		's' => round($s * 100),
+		'v' => round($v * 100),
+		'a' => $this->a
+	    );
 	}
-	return $hsv;
+	return null;
     }
 
-    protected function _hval($n1, $n2, $h) {
+    public function getHex() {
 
-	if ($h > 360) {
-	    $h-= 360;
-	} else if ($h < 0) {
-	    $h+= 360;
+	if ($this->success) {
+
+	    $chars = "0123456789abcdef";
+
+	    $r1 = $this->r >> 4;
+	    $g1 = $this->g >> 4;
+	    $b1 = $this->b >> 4;
+
+	    $r2 = $this->r & 0xf;
+	    $g2 = $this->g & 0xf;
+	    $b2 = $this->b & 0xf;
+
+	    if (0 == (($r1 ^ $r2) | ($g1 ^ $g2) | ($b1 ^ $b2))) {
+		return '#' . $chars[$r1] . $chars[$g1] . $chars[$b1];
+	    }
+	    return '#'
+	    . $chars[$r1] . $chars[$r2]
+	    . $chars[$g1] . $chars[$g2]
+	    . $chars[$b1] . $chars[$b2];
 	}
+	return null;
+    }
 
-	if ($h < 60) {
-	    return $n1 + ($n2 - $n1) * $h / 60;
-	} else if ($h < 180) {
-	    return $n2;
-	} else if ($h < 240) {
-	    return $n1 + ($n2 - $n1) * (240 - $h) / 60;
-	} else {
-	    return $n1;
+    public function getInt($alpha=false) {
+
+	if ($this->success) {
+	    if ($alpha) {
+		return (($this->a * 100 | 0) << 24 ^ $this->r << 16 ^ $this->g << 8 ^ $this->b);
+	    }
+	    return ($this->r << 16 ^ $this->g << 8 ^ $this->b) & 0xffffff;
 	}
-    }
-    ###
-
-    /**
-     * Gets the red portion of a color
-     *
-     * @param color $c - the color
-     * @return returns the red portion of the color
-     */
-    public function red($c) {
-
-	$x = $this->_input($c);
-
-	$r = array(
-	    $x[0],
-	    0xff,
-	    0xff
-	);
-
-	return $this->_output($r);
+	return null;
     }
 
-    /**
-     * Gets the green portion of a color
-     *
-     * @param color $c - the color
-     * @return returns the green portion of the color
-     */
-    public function green($c) {
-
-	$x = $this->_input($c);
-
-	$r = array(
-	    0xff,
-	    $x[1],
-	    0xff
-	);
-
-	return $this->_output($r);
+    function __construct($color) {
+	$this->setColor($color);
     }
 
-    /**
-     * Gets the blue portion of a color
-     *
-     * @param color $c - the color
-     * @return returns the blue portion of the color
-     */
-    public function blue($c) {
+    public function __toString() {
+	return $this->getHex();
+    }
+}
 
-	$x = $this->_input($c);
+class xColorMix {
 
-	$r = array(
-	    0xff,
-	    0xff,
-	    $x[2]
-	);
+    public function test($col) {
 
-	return $this->_output($r);
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+	    return $c;
+	}
+	return null;
     }
 
-    /**
-     * Gets a random color
-     *
-     * @return returns a random number
-     */
+    public function red($col) {
+
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+	    $c->g = 0xff;
+	    $c->b = 0xff;
+	    return $c;
+	}
+	return null;
+    }
+
+    public function blue($col) {
+
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+	    $c->r = 0xff;
+	    $c->g = 0xff;
+	    return $c;
+	}
+	return null;
+    }
+
+    public function green($col) {
+
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+	    $c->r = 0xff;
+	    $c->b = 0xff;
+	    return $c;
+	}
+	return null;
+    }
+
     public function random() {
 
-	$r = array(
+	return new xColor(array(
 	    rand(0, 255),
 	    rand(0, 255),
-	    rand(0, 255)
-	);
-
-	return $this->_output($r);
+	    rand(0, 255),
+	));
     }
 
-    /**
-     * Gets a merged color with the respect of an alpha value
-     *
-     * @param color $b - the first color
-     * @param color $f - the second color
-     * @param int $o - alpha value
-     * @return returns the color of both colors combined with an alpha value
-     */
-    public function opacity($b, $f, $o) {
+    public function complementary($col) {
 
-	if ($o > 1) {
-	    $o/= 100;
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+	    $c->r^= 0xff;
+	    $c->g^= 0xff;
+	    $c->b^= 0xff;
+	    return $c;
 	}
-
-	$x = $this->_input($f);
-	$y = $this->_input($b);
-
-	$r = array(
-	    (int)(($x[0] - $y[0]) * $o + $y[0]),
-	    (int)(($x[1] - $y[1]) * $o + $y[1]),
-	    (int)(($x[2] - $y[2]) * $o + $y[2]),
-	);
-
-	return $this->_output($r);
+	return null;
     }
 
-    /**
-     * Inverts a color
-     *
-     * @param color $n - the color
-     * @return returns the inverted color
-     */
-    public function invert($n) {
+    public function opacity($x, $y, $o) {
 
-	$r = $this->_input($n);
+	$a = new xColor($x);
+	$b = new xColor($y);
 
-	$r[0]^= 0xff;
-	$r[1]^= 0xff;
-	$r[2]^= 0xff;
+	if ($a->isSuccess() & $b->isSuccess()) {
 
-	return $this->_output($r);
+	    if ($o > 1) {
+		$o/= 100;
+	    }
+
+	    $o = max($o - 1 + $b->a, 0);
+
+	    $a->r = round(($b->r - $a->r) * $o + $a->r);
+	    $a->g = round(($b->g - $a->g) * $o + $a->g);
+	    $a->b = round(($b->b - $a->b) * $o + $a->b);
+
+	    return $a;
+	}
+	return null;
     }
 
-    /**
-     * Get's a XOR'ed combination of both colors
-     *
-     * @param color $a - the first color
-     * @param color $b - the second color
-     * @return returns the XOR'ed combination color of both colors
-     */
-    public function combine($a, $b) {
+    public function greyfilter($col, $formula=3) {
 
-	$r = $this->_input($a);
-	$s = $this->_input($b);
+	$c = new xColor($col);
 
-	$r[0]^= $s[0];
-	$r[1]^= $s[0];
-	$r[2]^= $s[0];
+	if ($c->isSuccess()) {
+	    switch ($formula) {
+		case 1:
+		    // My own formula
+		    $v = .35 + 13 * ($c->r + $c->g + $c->b) / 60;
+		    break;
+		case 2:
+		    // Sun's formula: (1 - avg) / (100 / 35) + avg)
+		    $v = (13 * ($c->r + $c->g + $c->b) + 5355) / 60;
+		    break;
+		default:
+		    $v = $c->r * .3 + $c->g * .59 + $c->b * .11;
+	    }
+	    $c->r = $c->g = $c->b = min($v | 0, 255);
 
-	return $this->_output($r);
+	    return $c;
+	}
+	return null;
     }
 
-    /**
-     * Get's the additive color mixing of 2 colors
-     *
-     * @param color $b - the first color
-     * @param color $f - the second color
-     * @return returns the additive color of both colors
-     */
-    public function additive($b, $f) {
+    public function webround($col) {
 
-	$x = $this->_input($b);
-	$y = $this->_input($f);
+	$c = new xColor($col);
 
-	$r = array(
-	    limit($x[0] + $y[0], 0xff),
-	    limit($x[1] + $y[1], 0xff),
-	    limit($x[2] + $y[2], 0xff)
-	);
-
-	return $this->_output($r);
+	if ($c->isSuccess()) {
+	    if (($c->r+= 0x33 - $c->r % 0x33) > 0xff)
+		$c->r = 0xff;
+	    if (($c->g+= 0x33 - $c->g % 0x33) > 0xff)
+		$c->g = 0xff;
+	    if (($c->b+= 0x33 - $c->b % 0x33) > 0xff)
+		$c->b = 0xff;
+	    return $c;
+	}
+	return null;
     }
 
-    /**
-     * Get's the subtractive color mixing of 2 colors
-     *
-     * @param color $b - the first color
-     * @param color $f - the second color
-     * @return returns the subtractive color of both colors
-     */
-    public function subtractive($b, $f) {
+    public function distance($x, $y) {
 
-	$x = $this->_input($b);
-	$y = $this->_input($f);
+	$a = new xColor($x);
+	$b = new xColor($y);
 
-	$r = array(
-	    bound($x[0] + $y[0] - 0xff, 0, 0xff),
-	    bound($x[1] + $y[1] - 0xff, 0, 0xff),
-	    bound($x[2] + $y[2] - 0xff, 0, 0xff)
-	);
-
-	return $this->_output($r);
+	if ($a->isSuccess() & $b->isSuccess()) {
+	    // Approximation attempt of http://www.compuphase.com/cmetric.htm
+	    return sqrt(3 * ($b->r - $a->r) * ($b->r - $a->r) + 4 * ($b->g - $a->g) * ($b->g - $a->g) + 2 * ($b->b - $a->b) * ($b->b - $a->b));
+	}
+	return null;
     }
 
-    /**
-     * Get's the difference color of 2 colors
-     *
-     * @param color $b - the first color
-     * @param color $f - the second color
-     * @return returns the difference of both colors
-     */
-    public function subtract($b, $f) {
+    public function readable($bg, $col) {
 
-	$x = $this->_input($b);
-	$y = $this->_input($f);
+	$a = new xColor($col);
+	$b = new xColor($bg);
 
-	$r = array(
-	    bound($x[0] - $y[0], 0, 0xff),
-	    bound($x[1] - $y[1], 0, 0xff),
-	    bound($x[2] - $y[2], 0, 0xff)
-	);
-
-	return $this->_output($r);
+	if ($a->isSuccess() & $b->isSuccess()) {
+	    return (
+	    ($b->r - $a->r) * ($b->r - $a->r) +
+	    ($b->g - $a->g) * ($b->g - $a->g) +
+	    ($b->b - $a->b) * ($b->b - $a->b)) > 0x28A4;
+	}
+	return null;
     }
 
-    /**
-     * Get's the multiply color of 2 colors
-     *
-     * @param color $b - the first color
-     * @param color $f - the second color
-     * @return returns a multiply of both colors
-     */
-    public function multiply($b, $f) {
+    public function combine($x, $y) {
 
-	$x = $this->_input($b);
-	$y = $this->_input($f);
+	$a = new xColor($x);
+	$b = new xColor($y);
 
-	$r = array(
-	    (int)((($x[0] / 0xff) * ($y[0] / 0xff)) * 0xff),
-	    (int)((($x[1] / 0xff) * ($y[1] / 0xff)) * 0xff),
-	    (int)((($x[2] / 0xff) * ($y[2] / 0xff)) * 0xff)
-	);
-
-	return $this->_output($r);
+	if ($a->isSuccess() & $b->isSuccess()) {
+	    $a->r^= $b->r;
+	    $a->g^= $b->g;
+	    $a->b^= $b->b;
+	    return $a;
+	}
+	return null;
     }
 
-    /**
-     * Get's a average color of both colors
-     *
-     * @param color $a - the first color
-     * @param color $b - the second color
-     * @return returns an average of both colors
-     */
-    function mix($a, $b) {
-
-	$x = $this->_input($a);
-	$y = $this->_input($b);
-
-	$r = array(
-	    ($x[0] + $y[0]) >> 1,
-	    ($x[1] + $y[1]) >> 1,
-	    ($x[2] + $y[2]) >> 1
-	);
-
-	return $this->_output($r);
-    }
-
-    /**
-     * Get's a lighten color
-     *
-     * @param color $col - the color
-     * @param int $deg - the step width
-     * @return returns a lighten color
-     */
-    function lightness($col, $deg = 10) {
-
-	$c = $this->_input($col);
-
-	$r = array(
-	    bound($c[0] + $deg, 0, 0xff),
-	    bound($c[1] + $deg, 0, 0xff),
-	    bound($c[2] + $deg, 0, 0xff)
-	);
-
-	return $this->_output($r);
-    }
-
-    /**
-     * Get's a color with parts of both colors
-     *
-     * @param color $x - the color
-     * @param color $y - the second color
-     * @return returns a secondary color
-     */
     public function breed($x, $y) {
 
-	$a = $this->_input($x);
-	$b = $this->_input($y);
+	$a = new xColor($x);
+	$b = new xColor($y);
 
 	$mask = 0;
-	for ($i = 0; $i < 6; ++$i) {
-	    if (rand(0, 1)) {
-		$mask|= 0x0f << ($i << 2);
+
+	if ($a->isSuccess() & $b->isSuccess()) {
+
+	    for ($i = 0; $i < 6; $i++) {
+		if (rand(0, 100) < 50) {
+		    $mask|= 0x0f << ($i << 2);
+		}
 	    }
+
+	    $a->r = ($a->r & (($mask >> 0x10) & 0xff)) | ($b->r & ((($mask >> 0x10) & 0xff) ^ 0xff));
+	    $a->g = ($a->g & (($mask >> 0x08) & 0xff)) | ($b->g & ((($mask >> 0x08) & 0xff) ^ 0xff));
+	    $a->b = ($a->b & (($mask >> 0x00) & 0xff)) | ($b->b & ((($mask >> 0x00) & 0xff) ^ 0xff));
+	    return $a;
 	}
-
-	return $this->_output($this->_int2rgb(($this->_rgb2int($a) & $mask) | ($this->_rgb2int($b) & ($mask ^ 0xffffff))));
+	return null;
     }
 
-    /**
-     * Get's the grey scale replacement of a color
-     *
-     * @param color $x - the color
-     * @return returns a grayscale color
-     */
-    public function greyscale($x) {
+    public function additive($x, $y) {
 
-	$a = $this->_input($x);
+	$a = new xColor($x);
+	$b = new xColor($y);
 
-	$y = (int)($a[0] * .3 + $a[1] * .59 + $a[2] * .11);
+	if ($a->isSuccess() & $b->isSuccess()) {
 
-	// Percentage: (255 - $y) * 100 / 255
-	return $this->_output(array($y, $y, $y));
-    }
+	    if (($a->r+= $b->r) > 0xff)
+		$a->r = 0xff;
+	    if (($a->g+= $b->g) > 0xff)
+		$a->g = 0xff;
+	    if (($a->b+= $b->b) > 0xff)
+		$a->b = 0xff;
 
-    /**
-     * Get's a web safe color
-     *
-     * @param color $c - the color
-     * @return returns a websafe color calculated from the parameter
-     */
-    public function webround($c) {
-
-	$x = $this->_input($c);
-
-	$r = array(
-	    bround($x[0], 0x33),
-	    bround($x[1], 0x33),
-	    bround($x[2], 0x33)
-	);
-
-	return $this->_output($r);
-    }
-
-    /**
-     * Get's a readable text color dependent on the background
-     *
-     * @param color $col - the background color
-     * @param color $light - return this color if background is dark
-     * @param color $dark - return this color if background is light
-     * @return returns color $light or $dark dependent on the background color
-     */
-    function textcolor($col, $light, $dark) {
-
-	if (false === $this->isReadable($col, $light, 0x66)) {
-	    return $this->_output($this->_input($dark));
-	} else {
-	    return $this->_output($this->_input($light));
+	    return $a;
 	}
+	return null;
     }
 
-    /**
-     * Check if a color is readable on a certain background
-     *
-     * @param color $col - foreground/text color
-     * @param color $bg - background color
-     * @param color $thld - the threshold for the decision
-     * @return returns bool whether the threshold is reached
-     */
-    function isReadable($col, $bg, $thld=0x66) {
+    public function subtractive($x, $y) {
 
-	$col = $this->_input($col);
-	$bg = $this->_input($bg);
+	$a = new xColor($x);
+	$b = new xColor($y);
 
-	for ($p = 0, $i = 0; $i < 3; $i++) {
-	    $p+= ( $bg[$i] - $col[$i]) * ($bg[$i] - $col[$i]);
+	if ($a->isSuccess() & $b->isSuccess()) {
+
+	    if (($a->r+= $b->r - 0xff) < 0)
+		$a->r = 0;
+	    if (($a->g+= $b->g - 0xff) < 0)
+		$a->g = 0;
+	    if (($a->b+= $b->b - 0xff) < 0)
+		$a->b = 0;
+
+	    return $a;
 	}
-
-	return sqrt($p) > $thld;
+	return null;
     }
 
-    /**
-     * Get's the distance between two colors
-     *
-     * @param color $x - the first color
-     * @param color $y - the second color
-     * @return returns the numerical distance between two colors
-     */
-    function distance($x, $y) {
+    public function subtract($x, $y) {
 
-	$a = $this->_input($x);
-	$b = $this->_input($y);
+	$a = new xColor($x);
+	$b = new xColor($y);
 
-	return sqrt(3 * ($b[0] - $a[0]) * ($b[0] - $a[0]) + 4 * ($b[1] - $a[1]) * ($b[1] - $a[1]) + 2 * ($b[2] - $a[2]) * ($b[2] - $a[2]));
-    }
+	if ($a->isSuccess() & $b->isSuccess()) {
 
-    /**
-     * Get's the colors between two colors
-     *
-     * @param color $x - the first color
-     * @param color $y - the second color
-     * @param int $deg - parts between color one and two
-     * @return returns an array of all color parts between the colors
-     */
-    function gradient($x, $y, $deg = 10) {
+	    if (($a->r-= $b->r) < 0)
+		$a->r = 0;
+	    if (($a->g-= $b->g) < 0)
+		$a->g = 0;
+	    if (($a->b-= $b->b) < 0)
+		$a->b = 0;
 
-	$ret = array();
-
-	if (0 === $deg) {
-	    $deg = 1;
+	    return $a;
 	}
-
-	$a = $this->_input($x);
-	$b = $this->_input($y);
-
-	$rstep = ($b[0] - $a[0]) / $deg;
-	$gstep = ($b[1] - $a[1]) / $deg;
-	$bstep = ($b[2] - $a[2]) / $deg;
-
-	for ($i = 0; $i < $deg; ++$i) {
-	    $nc[0] = bound($a[0] + $rstep * $i, 0, 0xff);
-	    $nc[1] = bound($a[1] + $gstep * $i, 0, 0xff);
-	    $nc[2] = bound($a[2] + $bstep * $i, 0, 0xff);
-	    $ret[] = $this->_output($nc);
-	}
-
-	return $ret;
+	return null;
     }
 
-    /**
-     * Gets the level in a fixed size gradient
-     *
-     * @param color $x - the first color
-     * @param color $y - the second color
-     * @param int $deg - parts between color one and two
-     * @param int $level - which part do we want
-     * @return returns the addressed colour
-     */
-    function gradientLevel($x, $y, $deg, $level) {
+    public function multiply($x, $y) {
+
+	$a = new xColor($x);
+	$b = new xColor($y);
+
+	if ($a->isSuccess() & $b->isSuccess()) {
+	    $a->r = ($a->r / 255 * $b->r) | 0;
+	    $a->g = ($a->g / 255 * $b->g) | 0;
+	    $a->b = ($a->b / 255 * $b->b) | 0;
+	    return $a;
+	}
+	return null;
+    }
+
+    public function average($x, $y) {
+
+	$a = new xColor($x);
+	$b = new xColor($y);
+
+	if ($a->isSuccess() & $b->isSuccess()) {
+	    $a->r = ($a->r + $b->r) >> 1;
+	    $a->g = ($a->g + $b->g) >> 1;
+	    $a->b = ($a->b + $b->b) >> 1;
+	    return $a;
+	}
+	return null;
+    }
+
+    public function triad($col) {
+
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+
+	    return array($c,
+		new xColor(array($c->b, $c->r, $c->g)),
+		new xColor(array($c->g, $c->b, $c->r)));
+	}
+	return null;
+    }
+
+    public function tetrad($col) {
+
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+
+	    return array($c,
+		new xColor(array($c->b, $c->r, $c->b)),
+		new xColor(array($c->b, $c->g, $c->r)),
+		new xColor(array($c->r, $c->b, $c->r)));
+	}
+	return null;
+    }
+
+    public function gradientlevel($x, $y, $level, $deg) {
 
 	if ($level > $deg)
-	    return NULL;
+	    return null;
 
-	$a = $this->_input($x);
-	$b = $this->_input($y);
+	$a = new xColor($x);
+	$b = new xColor($y);
 
-	$r = array(
-	    bound($a[0] + (($b[0] - $a[0]) / $deg) * $level, 0, 0xff),
-	    bound($a[1] + (($b[1] - $a[1]) / $deg) * $level, 0, 0xff),
-	    bound($a[2] + (($b[2] - $a[2]) / $deg) * $level, 0, 0xff)
-	);
+	if ($a->isSuccess() & $b->isSuccess()) {
 
-	return $this->_output($r);
+	    $a->r = ($a->r + (($b->r - $a->r) / $deg) * $level) | 0;
+	    $a->g = ($a->g + (($b->g - $a->g) / $deg) * $level) | 0;
+	    $a->b = ($a->b + (($b->b - $a->b) / $deg) * $level) | 0;
+
+	    return $a;
+	}
+	return null;
+    }
+
+    public function gradientarray($arr, $ndx, $size) {
+
+	if ($ndx > $size)
+	    return null;
+
+	$len = count($arr);
+
+	$e = ($ndx * ($len - 1) / $size) | 0;
+	$m = ($ndx - $size * $e / ($len - 1)) / $size;
+
+	$a = new xColor($x);
+	$b = new xColor($y);
+
+	if ($a->isSuccess() & $b->isSuccess()) {
+
+	    $a->r = ($a->r + $len * ($b->r - $a->r) * $m) | 0;
+	    $a->g = ($a->g + $len * ($b->g - $a->g) * $m) | 0;
+	    $a->b = ($a->b + $len * ($b->b - $a->b) * $m) | 0;
+
+	    return $a;
+	}
+	return null;
+    }
+
+    public function nearestname($a) {
+
+	$c = new xColor($a);
+
+	if ($c->isSuccess()) {
+	    return $c->getName();
+	}
+	return null;
+    }
+
+    public function darken($col, $by=1, $shade=32) {
+
+	if ($by < 0)
+	    return $this->lighten($col, -$by, $shade);
+
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+	    if (($c->r-= $shade * $by) < 0)
+		$c->r = 0;
+	    if (($c->g-= $shade * $by) < 0)
+		$c->g = 0;
+	    if (($c->b-= $shade * $by) < 0)
+		$c->b = 0;
+	    return $c;
+	}
+	return null;
+    }
+
+    public function lighten($col, $by=1, $shade=32) {
+
+	if ($by < 0)
+	    return $this->darken($col, -$by, $shade);
+
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+	    if (($c->r+= $shade * $by) > 0xff)
+		$c->r = 0xff;
+	    if (($c->g+= $shade * $by) > 0xff)
+		$c->g = 0xff;
+	    if (($c->b+= $shade * $by) > 0xff)
+		$c->b = 0xff;
+	    return $c;
+	}
+	return null;
+    }
+
+    public function analogous($col, $results=8, $slices=30) {
+
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+
+	    $hsv = $c->getHSV();
+	    $part = 360 / $slices;
+	    $ret = array($c);
+
+	    for ($hsv['h'] = (($hsv['h'] - ($part * $results >> 1)) + 720) % 360; --$results;) {
+		$hsv['h']+= $part;
+		$hsv['h']%= 360;
+		$ret[] = new xColor($hsv);
+	    }
+	    return $ret;
+	}
+	return null;
+    }
+
+    public function splitcomplement($col) {
+
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+
+	    $hsv = $c->getHSV();
+	    $ret = array($c);
+
+	    $hsv['v']+= 72;
+	    $hsv['v']%= 360;
+	    $ret[] = new xColor($hsv);
+
+	    $hsv['v']+= 144;
+	    $hsv['v']%= 360;
+	    $ret[] = new xColor($hsv);
+
+	    return $ret;
+	}
+	return null;
+    }
+
+    public function monochromatic($col, $results=6) {
+
+	$c = new xColor($col);
+
+	if ($c->isSuccess()) {
+
+	    $hsv = $c->getHSV();
+	    $ret = array($c);
+
+	    while (--$results) {
+		$hsv['v']+= 20;
+		$hsv['v']%= 100;
+		$ret[] = new xColor($hsv);
+	    }
+	    return $ret;
+	}
+	return null;
     }
 }
