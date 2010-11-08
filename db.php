@@ -24,9 +24,32 @@ define('CLUSTER_SIZE', 32);
 
 if (!extension_loaded('infusion')) {
 
-    function mysqli_safex($str) {
-	return "'" . addslashes($str) . "'";
+    function xsprintf($str, $cb, $ch='%') {
+
+	if (empty($ch) || !is_callable($cb)) {
+	    return $str;
+	}
+
+	for ($ret = "", $i = 0, $l = strlen($str); $i < $l; $i++) {
+
+	    if ($ch[0] == $str[$i]) {
+
+		for ($start = ++$i; $i < $l; ++$i) {
+		    if (ctype_alpha($str[$i]))
+			$ret.= $cb(substr($str, $start, $i - $start + 1));
+		    else
+			continue;
+		    break;
+		}
+	    } else
+		$ret.= $str[$i];
+	}
+	return $ret;
     }
+}
+
+function mysqli_safe($str) {
+    return "'" . addslashes($str) . "'";
 }
 
 final class DB {
