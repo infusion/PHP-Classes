@@ -51,15 +51,6 @@ function array_mask($arr, $mask) {
     return $ret;
 }
 
-function exp2($n) {
-    $log = floor(log10($n));
-
-    if (-2 <= $log && $log <= 3) {
-	return array($n, 0);
-    }
-    return array($n / pow(10, $log), $log);
-}
-
 function log2($n) {
     return log($n) / log(2);
 }
@@ -92,11 +83,11 @@ function array_psum($arr, $start, $len) {
 
 function array_assocsort(&$data, $col, $dir=SORT_DESC) {
 
-        $tmp = array();
-        foreach ($data as $k => &$v) {
-                $tmp[$k] = &$v[$col];
-        }
-        array_multisort($tmp, $dir, $data);
+    $tmp = array();
+    foreach ($data as $k => &$v) {
+	$tmp[$k] = &$v[$col];
+    }
+    array_multisort($tmp, $dir, $data);
 }
 
 function normalize_angle($angle) {
@@ -116,4 +107,27 @@ function normalize_version($version, $num=2) {
 	$str.= $tok;
     }
     return $str;
+}
+
+function xsprintf($str, $cb, $ch='%') {
+
+    if (empty($ch) || !is_callable($cb)) {
+	return $str;
+    }
+
+    for ($ret = "", $i = 0, $l = strlen($str); $i < $l; $i++) {
+
+	if ($ch[0] == $str[$i]) {
+
+	    for ($start = ++$i; $i < $l; ++$i) {
+		if (ctype_alpha($str[$i]))
+		    $ret.= $cb(substr($str, $start, $i - $start + 1));
+		else
+		    continue;
+		break;
+	    }
+	} else
+	    $ret.= $str[$i];
+    }
+    return $ret;
 }
