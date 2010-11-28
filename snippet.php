@@ -52,14 +52,14 @@ function array_mask($arr, $mask) {
 }
 
 function log2($n) {
-    return log($n) / log(2);
+    return log($n) / M_LN2;
 }
 
 function readable_byte($byte) {
 
     static $s = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
 
-    $e = (int)(log($byte) / log(1024));
+    $e = (int)(log($byte) / (M_LN2 * 10));
 
     return sprintf('%.2f' . $s[$e], $byte / pow(1024, $e));
 }
@@ -130,4 +130,61 @@ function xsprintf($str, $cb, $ch='%') {
 	    $ret.= $str[$i];
     }
     return $ret;
+}
+
+function gpp($x) {
+
+    $f = 1;
+    $n = 1;
+
+    if ($x <= 0) {
+	return 1;
+    }
+
+    for (;; $n++) {
+
+	if (($nn = $n * $n) >= $x) {
+	    break;
+	} if (0 == ($x % $nn)) {
+	    $f = $n;
+	}
+    }
+    return $f;
+}
+
+function possessive($str) {
+    return $str . (substr($str, -1) === 's' ? "'" : "'s");
+}
+
+function strcut($str, $max, $c="...") {
+
+    $sl = strlen($str);
+    $cl = strlen($c);
+
+    if ($max <= 0) {
+	return false;
+    }
+
+    if ($sl - $cl > $max) {
+
+	for ($i = min($sl - 1, $max); $i >= 0; $i--) {
+	    switch ($str[$i]) {
+		case ' ':
+		case"\t":
+		case "\r":
+		case "\n":
+		    break 2;
+	    }
+	}
+
+	if ($i == -1) {
+	    $len = min($sl, $max);
+	} else {
+	    $len = $i;
+	}
+
+	return substr($str, 0, $len) . $c;
+    } else {
+	return $str;
+    }
 }
