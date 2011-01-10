@@ -215,9 +215,36 @@ function utf8_chr($c) {
 	if ($c < 0x80)
 		return chr($c);
 	if ($c < 0x800)
-		return chr(($c >> 0x06) + 0xC0) . chr((($c >> 0x00) & 0x3F) + 0x80);
+		return pack('CC', ($c >> 0x06) + 0xC0, (($c >> 0x00) & 0x3F) + 0x80);;
 	if ($c < 0x10000)
-		return chr(($c >> 0x0C) + 0xE0) . chr((($c >> 0x06) & 0x3F) + 0x80) . chr((($c >> 0x00) & 0x3F) + 0x80);
+		return pack('CCC', ($c >> 0x0C) + 0xE0, (($c >> 0x06) & 0x3F) + 0x80, (($c >> 0x00) & 0x3F) + 0x80);
 	if ($c < 0x200000)
-		return chr(($c >> 0x12) + 0xF0) . chr((($c >> 0x0C) & 0x3F) + 0x80) . chr((($c >> 0x06) & 0x3F) + 0x80) . chr(($c & 0x3F) + 0x80);
+		return pack('CCCC', ($c >> 0x12) + 0xF0, (($c >> 0x0C) & 0x3F) + 0x80, (($c >> 0x06) & 0x3F) + 0x80, ($c & 0x3F) + 0x80);
+}
+
+function toSqares($n) {
+
+	$x = (int)sqrt($n);
+	$y = 0;
+	$r = array();
+
+	do {
+
+		if ($x < $y)
+			break;
+
+		$sum = $x * $x + $y * $y;
+
+		if ($sum < $n) {
+			++$y; continue;
+		}
+
+		if ($sum > $n) {
+			--$x; continue;
+		}
+		--$x; ++$y;
+		$r[] = array($x, $y);
+	} while (1);
+
+	return $r;
 }
