@@ -281,12 +281,12 @@ final class DB {
 	 * @param boolean $abs Destination URL is absolute
 	 * @param boolean $perm Destination URL is redirected permanent
 	 */
-	public final static function locate($url='/', $abs=false, $perm=false) {
+	public final static function locate($url='/', $perm=false) {
 
 		header($perm ? 'HTTP/1.1 301 Moved Permanently' : 'HTTP/1.1 302 Found');
 		header('Connection: close'); // stfu IE
 
-		if (false === $abs || '/' === $url) {
+		if ('/' === $url[0]) {
 			header('Location: ' . BASE . $url);
 		} else {
 			header('Location: ' . $url);
@@ -360,8 +360,8 @@ final class DB {
 
 			$param = DB::$options['sort'];
 
-			if (isset($opt['dir'])) {
-				$param.= ' ' . $opt['dir'];
+			if (isset($opt['dir']) && 0 === strcasecmp($opt['dir'], 'desc')) {
+				$param.= ' DESC';
 			}
 
 			if (false === ($res = mysqli_query(DB::$cur, 'CREATE TEMPORARY TABLE ' . $table . ' (KEY SORT(' . $param . ')) ' . $query))) {
