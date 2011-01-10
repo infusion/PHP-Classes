@@ -192,7 +192,7 @@ function strcut($str, $max, $c="...") {
 function rotbit($bit, $m) {
 
 	$m = (31 + ($m % 31)) % 31;
-	return (($bit << $m) | ($bit >> (16 - $m))) & 0x7FFFFFFF;
+	return (($bit << $m) | ($bit >> (15 - $m))) & 0x7FFFFFFF;
 }
 
 function rotint($n, $x, $y, $m) {
