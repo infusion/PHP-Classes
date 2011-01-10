@@ -191,8 +191,8 @@ function strcut($str, $max, $c="...") {
 
 function rotbit($bit, $m) {
 
-	$m = (63 + ($m % 63)) % 63;
-	return (($bit << $m) | ($bit >> (31 - $m))) & 0x7FFFFFFFFFFFFFFF;
+	$m = (31 + ($m % 31)) % 31;
+	return (($bit << $m) | ($bit >> (16 - $m))) & 0x7FFFFFFF;
 }
 
 function rotint($n, $x, $y, $m) {
