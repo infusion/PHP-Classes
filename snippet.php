@@ -222,7 +222,7 @@ function utf8_chr($c) {
 		return pack('CCCC', ($c >> 0x12) + 0xF0, (($c >> 0x0C) & 0x3F) + 0x80, (($c >> 0x06) & 0x3F) + 0x80, ($c & 0x3F) + 0x80);
 }
 
-function toSqares($n) {
+function toSquares($n) {
 
 	$x = (int)sqrt($n);
 	$y = 0;
@@ -242,8 +242,7 @@ function toSqares($n) {
 		if ($sum > $n) {
 			--$x; continue;
 		}
-		--$x; ++$y;
-		$r[] = array($x, $y);
+		$r[] = array($x--, $y++);
 	} while (1);
 
 	return $r;
