@@ -32,11 +32,12 @@ function array_extract_key($arr, $key) {
 function array_weighted_rand($values) {
 	$r = mt_rand(1, array_sum($values));
 
-	foreach ($values as $v) {
+	foreach ($values as $k => $v) {
 		if ($r <= $v)
 			return $k;
 		$r-= $v;
 	}
+	return null;
 }
 
 function array_mask($arr, $mask) {
@@ -96,9 +97,9 @@ function normalize_angle($angle) {
 
 function normalize_version($version, $num=2) {
 
-	$tok = strtok($version, '._');
+	$tok = strtok($version, '._,');
 
-	for ($i = 0, $str = ''; $tok !== false; $tok = strtok('._')) {
+	for ($i = 0, $str = ''; $tok !== false; $tok = strtok('._,')) {
 
 		if ($i > $num)
 			break;
