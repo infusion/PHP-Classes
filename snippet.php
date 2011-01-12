@@ -223,7 +223,17 @@ function utf8_chr($c) {
 		return pack('CCCC', ($c >> 0x12) + 0xF0, (($c >> 0x0C) & 0x3F) + 0x80, (($c >> 0x06) & 0x3F) + 0x80, ($c & 0x3F) + 0x80);
 }
 
-function toSquares($n) {
+function simple_gif($r=0, $g=0, $b=0, $t=true) {
+
+	if ($t) {
+		$t = '21f90401000001002c00000000010001000002024c01003b';
+	} else {
+		$t = '2c00000000010001000002024c01003b';
+	}
+	return pack('H32CCCH*', '47494638396101000100900100ffffff', $r, $g, $b, $t);
+}
+
+function array_squares($n) {
 
 	$x = (int)sqrt($n);
 	$y = 0;
