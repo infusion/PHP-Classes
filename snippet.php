@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * A collection of PHP functions I've written over the time
+ *
+ * @author Robert Eisele <robert@xarg.org>
+ * @copyright Copyright (c) 2010, Robert Eisele
+ * @license Dual licensed under the MIT or GPL Version 2 licenses.
+ *
+ */
+
 function str_random($len=32, $base=62) {
 
 	static $chars = '0123456789abcdefABCDEFghijklmnopqrstuvwxyzGHIJKLMNOPQRSTUVWXYZ';
