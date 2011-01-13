@@ -85,8 +85,8 @@ function array_psum($arr, $start, $len) {
 function array_assocsort(&$data, $col, $dir=SORT_DESC) {
 
 	$tmp = array();
-	foreach ($data as $k => &$v) {
-		$tmp[$k] = &$v[$col];
+	foreach ($data as $k => $v) {
+		$tmp[$k] = $v[$col];
 	}
 	array_multisort($tmp, $dir, $data);
 }
