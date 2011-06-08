@@ -8,7 +8,6 @@
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  *
  */
-
 function str_random($len=32, $base=62) {
 
 	static $chars = '0123456789abcdefABCDEFghijklmnopqrstuvwxyzGHIJKLMNOPQRSTUVWXYZ';
@@ -18,7 +17,7 @@ function str_random($len=32, $base=62) {
 	fclose($fd);
 
 	while ($len--) {
-		$str[$len] = $chars[(int)(ord($str[$len]) / 256 * $base)];
+		$str[$len] = $chars[ord($str[$len]) * $base >> 8];
 	}
 	return $str;
 }
@@ -248,22 +247,140 @@ function array_squares($n) {
 	$y = 0;
 	$r = array();
 
-	do {
-
-		if ($x < $y)
-			break;
+	while ($y <= $x) {
 
 		$sum = $x * $x + $y * $y;
 
 		if ($sum < $n) {
-			++$y; continue;
+			++$y;
+			continue;
 		}
 
 		if ($sum > $n) {
-			--$x; continue;
+			--$x;
+			continue;
 		}
 		$r[] = array($x--, $y++);
-	} while (1);
+	}
 
 	return $r;
+}
+
+function numberchop($n, array $parts) {
+
+	$p = 0;
+	$c = 0;
+	$t = 0;
+	$n = (int)$n;
+
+	$pc = count($parts);
+
+	if (0 == $pc) {
+		return array();
+	}
+
+	rsort($parts);
+
+	if (!isset($parts[$pc - 1]) || $parts[$pc - 1] <= 0) {
+		return false;
+	}
+
+	$ret = array();
+
+	while ($n > 0) {
+
+		if (0 == $t) {
+
+			if ($p == $pc) {
+				return false;
+			}
+
+			if (!isset($parts[$p])) {
+				return false;
+			}
+
+			$t = (int)$parts[$p];
+		}
+
+		if (0 == $t) {
+			return false;
+		}
+
+		if ($t <= $n) {
+			$c++;
+			if (($n -= $t) < $t) {
+				$ret[$t] = $c;
+				$c = $t = 0;
+				$p++;
+			}
+		} else {
+			$p++;
+			$t = 0;
+		}
+	}
+	return $ret;
+}
+
+function is_prime($n) {
+
+	if ($n < 2)
+		return false;
+	for ($j = $n / 2, $i = 2; $i < $j + 1; $i++) {
+		if (!($n - (int)($j = $n / $i) * $i))
+			return false;
+	}
+	return true;
+}
+
+function factor($a, $b, $c) { // ax^2 + bx + c
+	$a*= 2;
+
+	$t = $b * $b - 2 * $a * $c;
+
+	if ($t < 0)
+		return false;
+
+	$t = sqrt($t);
+
+	$p = ($b - $t) / $a;
+	$q = ($b + $t) / $a;
+
+	if ((double)(int)$p * 10 !== (double)$p * 10)
+		return false;
+	if ((double)(int)$q * 10 !== (double)$q * 10)
+		return false;
+
+	if ($p < 0)
+		$str = "(x" . $p . ")";
+	else
+		$str = "(x+" . $p . ")";
+
+	if ($q < 0)
+		$str.= "(x" . $q . ")";
+	else
+		$str.= "(x+" . $q . ")";
+
+	return $str;
+}
+
+function bound($n, $x, $y) {
+
+	if ($y < $x || $n < $x) {
+		return $x;
+	}
+
+	if ($y < $n) {
+		return $y;
+	}
+	return $n;
+}
+
+function str_part($str, $map) {
+
+	$ret = array();
+
+	foreach ($map as $k => $m) {
+		$ret[$k] = substr($str, $m[0], $m[1]);
+	}
+	return $ret;
 }
