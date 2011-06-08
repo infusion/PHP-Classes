@@ -1,5 +1,9 @@
 <?php
 
+// TODO:
+// api mit oauth
+// bei twitter verlinken
+
 /**
  * The probably most complete twitter API written in PHP
  *
