@@ -131,7 +131,7 @@ final class DB {
 			return $_SESSION['SRV'];
 		}
 
-		/* Handle lookup if not calculateable */
+		/* Handle lookup if not calculatable */
 
 		if (!isset(DB::$con[0])) {
 			DB::_connect(apc_fetch('database-0'), 0);
@@ -482,6 +482,7 @@ final class DB {
 				return implode(',', array_map('mysqli_quote', DB::$args[++DB::$a]));
 
 			case 'J':
+				// http://www.xarg.org/2010/06/optimized-way-of-getting-subqueries-at-once-using-json/
 				$fields = DB::$args[++DB::$a];
 
 				$str = "CONCAT('[',GROUP_CONCAT(CONCAT('{\"";
