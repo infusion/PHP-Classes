@@ -46,7 +46,7 @@ if (!function_exists('xsprintf')) {
 	}
 }
 
-function mysqli_safe($str) {
+function mysqli_quote($str) {
 	return "'" . addslashes($str) . "'";
 }
 
@@ -428,7 +428,7 @@ final class DB {
 				return $_SESSION['UID'];
 
 			case 's':
-				return mysqli_safe(DB::$args[++DB::$a]);
+				return mysqli_quote(DB::$args[++DB::$a]);
 
 			case 'i':
 				return (int)DB::$args[++DB::$a];
@@ -460,10 +460,10 @@ final class DB {
 			case 'm':
 				if (empty(DB::$args[++DB::$a]))
 					return 'NULL';
-				return mysqli_safe(DB::$args[DB::$a]);
+				return mysqli_quote(DB::$args[DB::$a]);
 
 			case 'h':
-				return mysqli_safe(htmlspecialchars(DB::$args[++DB::$a]));
+				return mysqli_quote(htmlspecialchars(DB::$args[++DB::$a]));
 
 			case 'r':
 				return sprintf('%u', ip2long(DB::$args[++DB::$a]));
@@ -479,7 +479,7 @@ final class DB {
 				return empty(DB::$args[++DB::$a]) ? 'NULL' : "''"; // Bool
 
 			case 'a':
-				return implode(',', array_map('mysqli_safe', DB::$args[++DB::$a]));
+				return implode(',', array_map('mysqli_quote', DB::$args[++DB::$a]));
 
 			case 'J':
 				$fields = DB::$args[++DB::$a];
